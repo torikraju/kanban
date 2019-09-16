@@ -33,4 +33,8 @@ public class ProjectService {
         return projectRepository.findByIdentifier(identifier);
     }
 
+    public Iterable<Project> findAll() {
+        return projectRepository.findAll();
+    }
+
 }
