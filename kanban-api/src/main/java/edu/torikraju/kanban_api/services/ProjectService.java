@@ -1,6 +1,7 @@
 package edu.torikraju.kanban_api.services;
 
 import edu.torikraju.kanban_api.domain.Project;
+import edu.torikraju.kanban_api.exceptions.ProjectIdException;
 import edu.torikraju.kanban_api.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,12 @@ public class ProjectService {
     }
 
     public Project saveOrUpdate(Project project) {
-        return projectRepository.save(project);
+        try {
+            return projectRepository.save(project);
+        } catch (Exception e) {
+            throw new ProjectIdException("Project identifier " + project.getIdentifier() + " already exists");
+        }
+
     }
 
 }
