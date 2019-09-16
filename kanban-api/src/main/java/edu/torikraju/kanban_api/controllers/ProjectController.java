@@ -42,4 +42,10 @@ public class ProjectController {
         return projectService.findAll();
     }
 
+    @DeleteMapping("/{identifier}")
+    public ResponseEntity<?> deleteProject(@PathVariable String identifier) {
+        projectService.deleteProject(identifier);
+        return new ResponseEntity<>("Project with identifier: " + identifier + " successfully deleted", HttpStatus.OK);
+    }
+
 }
