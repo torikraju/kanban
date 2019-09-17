@@ -27,11 +27,19 @@ export const getAllProject = () => () => new Promise(async (resolve, reject) => 
 
 export const deleteProject = (identifier) => () => new Promise(async (resolve, reject) => {
   try {
-    console.log(identifier);
     const request = await axios.delete(`api/project/${identifier}`);
     resolve(request.data);
   } catch (e) {
-    console.log(e.response);
+    reject(e.response);
+  }
+});
+
+
+export const getOneProject = (identifier) => () => new Promise(async (resolve, reject) => {
+  try {
+    const request = await axios.get(`api/project/${identifier}`);
+    resolve(request.data);
+  } catch (e) {
     reject(e.response);
   }
 });

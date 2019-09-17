@@ -8,6 +8,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
+import { Link } from 'react-router-dom';
 import { getAllProject, deleteProject } from '../../store/actions';
 import Loading from '../Loading';
 
@@ -119,6 +120,7 @@ class ProjectItems extends Component {
       );
     };
 
+
     projectItem = (props) => (
       <div className="card card-body bg-light mb-3" key={props.id}>
         <div className="row">
@@ -136,11 +138,11 @@ class ProjectItems extends Component {
                   <i className="fa fa-flag-checkered pr-1">Project Board </i>
                 </li>
               </a>
-              <a href="#/">
+              <Link to={`/updateProject/${props.identifier}`}>
                 <li className="list-group-item update">
                   <i className="fa fa-edit pr-1">Update Project Info</i>
                 </li>
-              </a>
+              </Link>
               <a href="/#" onClick={(event) => this._handleDelete(event, props.id)}>
                 <li className="list-group-item delete">
                   <i className="fa fa-minus-circle pr-1">Delete Project</i>

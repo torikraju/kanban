@@ -9,6 +9,7 @@ const Routes = () => (
   <Switch>
     <Route path="/" exact component={Dashboard} />
     <Route path="/addProject" exact component={ProjectFrom} />
+    <Route path="/updateProject/:identifier" exact component={ProjectFrom} />
   </Switch>
 );
 

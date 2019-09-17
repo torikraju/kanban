@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Layout from '../hoc/Layout';
 import { prepareFormData, resetForm, update } from '../utility/AppUtil';
 import FormField from '../components/FormField';
-import { saveProject } from '../store/actions';
+import { saveProject, getOneProject } from '../store/actions';
 
 class ProjectFrom extends Component {
   state = {
@@ -35,6 +35,7 @@ class ProjectFrom extends Component {
           type: 'text',
           placeholder: 'Unique Project ID',
           className: 'form-control form-control-lg',
+
         },
         validation: {
           required: true,
@@ -92,6 +93,50 @@ class ProjectFrom extends Component {
         validationMessage: '',
       },
     },
+    updateForm: false,
+    fetchError: false,
+    id: '',
+  };
+
+  componentDidMount() {
+    (async () => {
+      try {
+        const { match } = this.props;
+        const { identifier } = match.params;
+        if (identifier) {
+          this.setState({ updateForm: true });
+          await this._setFormData(identifier);
+        }
+      } catch (e) {
+        console.log(`error in ProjectFrom-componentDidMount ${e}`);
+      }
+    })();
+  }
+
+  _setFormData = async (identifier) => {
+    const { getOneProject: getOne } = this.props;
+    const { formData } = this.state;
+    try {
+      const project = await getOne(identifier);
+      const updatedFormData = { ...formData };
+      // eslint-disable-next-line array-callback-return
+      Object.keys(updatedFormData).map((el) => {
+        const updatedEl = { ...updatedFormData[el] };
+        updatedEl.value = project[el] ? project[el] : '';
+        updatedEl.valid = true;
+        updatedEl.touch = true;
+        updatedEl.validationMessage = '';
+        if (el === 'identifier') {
+          const updatedConfig = { ...updatedEl.config };
+          updatedConfig.disabled = 'true';
+          updatedEl.config = updatedConfig;
+        }
+        updatedFormData[el] = updatedEl;
+      });
+      this.setState({ formData: updatedFormData, id: project.id });
+    } catch (e) {
+      this.setState({ fetchError: true });
+    }
   };
 
   updateForm = (element) => {
@@ -110,12 +155,14 @@ class ProjectFrom extends Component {
 
   _submitForm = async (event) => {
     event.preventDefault();
-    const { formData } = this.state;
-    const { saveProject: save } = this.props;
+    const { formData, updateForm, id } = this.state;
+    const { saveProject: save, history } = this.props;
     const { data: _data, formIsValid } = prepareFormData(formData);
+    if (updateForm) _data.id = id;
     if (formIsValid) {
       try {
         await save(_data);
+        if (updateForm) history.push('/');
         this.setState({ formData: resetForm(formData) });
         this._showSuccessMessage();
       } catch (e) {
@@ -136,7 +183,9 @@ class ProjectFrom extends Component {
 
 
   render() {
-    const { formData, formSuccessMessage, formErrorMessage } = this.state;
+    const {
+      formData, formSuccessMessage, formErrorMessage, updateForm, fetchError,
+    } = this.state;
     const { loading } = this.props;
 
     const button = (
@@ -156,8 +205,15 @@ class ProjectFrom extends Component {
           <div className="container">
             <div className="row">
               <div className="col-md-8 m-auto">
-                <h5 className="display-4 text-center">Create / Edit Project form</h5>
+                {fetchError
+                  ? <h5 className="display-4 text-center">Could not find project</h5>
+                  : (
+                    <h5 className="display-4 text-center">
+                      {updateForm ? 'Update Project' : 'Create Project'}
+                    </h5>
+                  )}
                 <hr />
+                {!fetchError && (
                 <form onSubmit={(event) => this._submitForm(event)}>
                   <FormField
                     id="name"
@@ -190,6 +246,7 @@ class ProjectFrom extends Component {
                   <p className="text-danger">{formErrorMessage}</p>
                   {button}
                 </form>
+                )}
               </div>
             </div>
           </div>
@@ -205,6 +262,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   saveProject: (data) => dispatch(saveProject(data)),
+  getOneProject: (identifier) => dispatch(getOneProject(identifier)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectFrom);
