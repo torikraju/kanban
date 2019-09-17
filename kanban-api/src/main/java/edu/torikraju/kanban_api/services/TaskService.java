@@ -22,12 +22,13 @@ public class TaskService {
         task.setBacklog(backlog);
         Integer sequence = backlog.getPTSequence();
         sequence++;
+        backlog.setPTSequence(sequence);
         task.setProjectSequence(backlog.getProjectIdentifier() + '-' + sequence);
         task.setProjectIdentifier(backlog.getProjectIdentifier());
-        if (task.getPriority() == null || task.getPriority() == 0) {
+        if (task.getPriority() == null) {
             task.setPriority(3);
         }
-        if (task.getStatus() == null || task.getStatus().equals("")) {
+        if (task.getStatus() == null) {
             task.setStatus("TO_DO");
         }
         return taskRepository.save(task);
