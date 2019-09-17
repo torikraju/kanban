@@ -70,6 +70,7 @@ class ProjectFrom extends Component {
           type: 'date',
           className: 'form-control form-control-lg',
         },
+        label: 'Start Date',
         validation: {
           required: false,
         },
@@ -85,6 +86,7 @@ class ProjectFrom extends Component {
           type: 'date',
           className: 'form-control form-control-lg',
         },
+        label: 'Estimated End Date',
         validation: {
           required: false,
         },
@@ -215,33 +217,13 @@ class ProjectFrom extends Component {
                 <hr />
                 {!fetchError && (
                 <form onSubmit={(event) => this._submitForm(event)}>
-                  <FormField
-                    id="name"
-                    formData={formData.name}
-                    change={(element) => this.updateForm(element)}
-                  />
-                  <FormField
-                    id="identifier"
-                    formData={formData.identifier}
-                    change={(element) => this.updateForm(element)}
-                  />
-                  <FormField
-                    id="description"
-                    formData={formData.description}
-                    change={(element) => this.updateForm(element)}
-                  />
-                  <h6>Start Date</h6>
-                  <FormField
-                    id="startDate"
-                    formData={formData.startDate}
-                    change={(element) => this.updateForm(element)}
-                  />
-                  <h6>Estimated End Date</h6>
-                  <FormField
-                    id="endData"
-                    formData={formData.endData}
-                    change={(element) => this.updateForm(element)}
-                  />
+                  {Object.keys(formData).map((el) => (
+                    <FormField
+                      id={el}
+                      formData={formData[el]}
+                      change={(element) => this.updateForm(element)}
+                    />
+                  ))}
                   <p className="text-success">{formSuccessMessage}</p>
                   <p className="text-danger">{formErrorMessage}</p>
                   {button}

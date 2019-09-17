@@ -15,15 +15,18 @@ const FormField = ({ formData, change, id }) => {
     let formTemplate = null;
     if (formData.element === ('input')) {
       formTemplate = (
-        <div className="form-group">
-          <input
-            {...formData.config}
-            value={formData.value}
-            onBlur={(event) => change({ event, id, blur: true })}
-            onChange={(event) => change({ event, id })}
-          />
-          {showError()}
-        </div>
+        <>
+          {formData.label && <h6>{formData.label}</h6>}
+          <div className="form-group">
+            <input
+              {...formData.config}
+              value={formData.value}
+              onBlur={(event) => change({ event, id, blur: true })}
+              onChange={(event) => change({ event, id })}
+            />
+            {showError()}
+          </div>
+        </>
       );
     } else if (formData.element === ('textarea')) {
       formTemplate = (
