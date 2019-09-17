@@ -7,7 +7,6 @@ export const saveProject = (formData) => (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       const request = await axios.post('/api/project', formData);
-      console.log(request.data);
       resolve(request.data);
       dispatch(stopFormLoading());
     } catch (e) {
@@ -20,9 +19,19 @@ export const saveProject = (formData) => (dispatch) => {
 export const getAllProject = () => () => new Promise(async (resolve, reject) => {
   try {
     const request = await axios.get('/api/project/all');
-    console.log(request.data);
     resolve(request.data);
   } catch (e) {
+    reject(e.response);
+  }
+});
+
+export const deleteProject = (identifier) => () => new Promise(async (resolve, reject) => {
+  try {
+    console.log(identifier);
+    const request = await axios.delete(`api/project/${identifier}`);
+    resolve(request.data);
+  } catch (e) {
+    console.log(e.response);
     reject(e.response);
   }
 });
