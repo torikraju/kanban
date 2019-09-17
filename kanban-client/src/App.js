@@ -1,12 +1,20 @@
 import React from 'react';
-import './App.css';
-import Dashboard from './pages/Dashboard';
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+
+import Routes from './Routes';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './resources/css/App.css';
+import store from './store/sotre';
+
 
 function App() {
   return (
-    <div className="App">
-      <Dashboard />
-    </div>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes />
+      </BrowserRouter>
+    </Provider>
   );
 }
 
