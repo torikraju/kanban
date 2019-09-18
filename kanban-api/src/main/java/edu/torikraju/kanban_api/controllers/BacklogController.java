@@ -1,6 +1,5 @@
 package edu.torikraju.kanban_api.controllers;
 
-import edu.torikraju.kanban_api.domain.Project;
 import edu.torikraju.kanban_api.domain.Task;
 import edu.torikraju.kanban_api.services.MapValidationErrorService;
 import edu.torikraju.kanban_api.services.TaskService;
@@ -10,7 +9,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @CrossOrigin

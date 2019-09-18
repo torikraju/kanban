@@ -10,4 +10,5 @@ public class KanbanApiApplication {
         SpringApplication.run(KanbanApiApplication.class, args);
     }
 
+
 }
