@@ -9,7 +9,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
 import { Link } from 'react-router-dom';
-import { getAllProject, deleteProject } from '../../store/actions';
+import {
+  getAllProject, deleteProject, setProject,
+} from '../../store/actions';
 import Loading from '../Loading';
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
@@ -26,13 +28,6 @@ class ProjectItems extends Component {
       (async () => {
         try {
           await this._fetchAndSetState();
-          // const matchId = this.props.match.params.id;
-          // if (!matchId) {
-          //   this._getTeams(false, 'Add Match', matchId);
-          // } else {
-          //   const getMatch = await firebaseDB.ref(`matches/${matchId}`).once('value');
-          //   this._getTeams(getMatch.val(), 'Update Match', matchId);
-          // }
         } catch (e) {
           console.log(`error in componentDidMount-ProjectItems ${e}`);
         }
@@ -133,11 +128,11 @@ class ProjectItems extends Component {
           </div>
           <div className="col-md-4 d-none d-lg-block">
             <ul className="list-group">
-              <a href="#">
+              <Link to={`/projectBoard/${props.identifier}`} onClick={() => this.props.setProject(props)}>
                 <li className="list-group-item board">
                   <i className="fa fa-flag-checkered pr-1">Project Board </i>
                 </li>
-              </a>
+              </Link>
               <Link to={`/updateProject/${props.identifier}`}>
                 <li className="list-group-item update">
                   <i className="fa fa-edit pr-1">Update Project Info</i>
@@ -170,6 +165,7 @@ class ProjectItems extends Component {
 const mapDispatchToProps = (dispatch) => ({
   getProjects: () => dispatch(getAllProject()),
   deleteProject: (identifier) => dispatch(deleteProject(identifier)),
+  setProject: (project) => dispatch(setProject(project)),
 });
 
 export default connect(null, mapDispatchToProps)(ProjectItems);

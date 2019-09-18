@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import ProjectItems from '../components/Project/ProjectItems';
 import Layout from '../hoc/Layout';
+import { removeProject } from '../store/actions';
 
-// eslint-disable-next-line react/prefer-stateless-function
+
 class Dashboard extends Component {
+  componentDidMount() {
+    // eslint-disable-next-line react/destructuring-assignment
+    this.props.removeProject();
+  }
+
   render() {
     return (
       <Layout>
@@ -30,4 +37,8 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+const mapDispatchToProps = (dispatch) => ({
+  removeProject: (data) => dispatch(removeProject(data)),
+});
+
+export default connect(null, mapDispatchToProps)(Dashboard);

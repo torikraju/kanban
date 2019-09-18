@@ -4,9 +4,12 @@ import {
 import thunk from 'redux-thunk';
 
 import uiReducer from './reducers/ui';
+import projectReducer from './reducers/project';
+
 
 const rootReducer = combineReducers({
   ui: uiReducer,
+  project: projectReducer,
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

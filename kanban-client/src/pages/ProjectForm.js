@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { keys } from '@material-ui/core/styles/createBreakpoints';
 import Layout from '../hoc/Layout';
 import { prepareFormData, resetForm, update } from '../utility/AppUtil';
 import FormField from '../components/FormField';
 import { saveProject, getOneProject } from '../store/actions';
+import SubmitButton from '../components/SubmitButton';
 
 class ProjectFrom extends Component {
   state = {
@@ -190,17 +192,6 @@ class ProjectFrom extends Component {
     } = this.state;
     const { loading } = this.props;
 
-    const button = (
-      loading
-        ? (
-          <button className="btn btn-primary" type="button" disabled>
-            <span className="spinner-grow spinner-grow-sm" />
-                  Loading...
-          </button>
-        )
-        : <input type="submit" className="btn btn-primary btn-block mt-4" />
-    );
-
     return (
       <Layout>
         <div className="project">
@@ -219,6 +210,7 @@ class ProjectFrom extends Component {
                 <form onSubmit={(event) => this._submitForm(event)}>
                   {Object.keys(formData).map((el) => (
                     <FormField
+                      key={el}
                       id={el}
                       formData={formData[el]}
                       change={(element) => this.updateForm(element)}
@@ -226,7 +218,7 @@ class ProjectFrom extends Component {
                   ))}
                   <p className="text-success">{formSuccessMessage}</p>
                   <p className="text-danger">{formErrorMessage}</p>
-                  {button}
+                  <SubmitButton loading={loading} />
                 </form>
                 )}
               </div>
