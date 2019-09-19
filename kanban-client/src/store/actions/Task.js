@@ -18,3 +18,39 @@ export const saveTask = (formData, identifier) => (dispatch) => {
     }
   });
 };
+
+export const getTaskByIdentifier = (identifier) => () => new Promise(async (resolve, reject) => {
+  try {
+    const request = await axios.get(`/api/backlog/${identifier}`);
+    resolve(request.data);
+  } catch (e) {
+    if (e.response) {
+      reject(e.response);
+    }
+    reject(e);
+  }
+});
+
+export const getParticularTask = (id, ps) => () => new Promise(async (resolve, reject) => {
+  try {
+    const request = await axios.get(`/api/backlog/${id}/${ps}`);
+    resolve(request.data);
+  } catch (e) {
+    if (e.response) {
+      reject(e.response);
+    }
+    reject(e);
+  }
+});
+
+export const deleteTask = (id, ps) => () => new Promise(async (resolve, reject) => {
+  try {
+    const request = await axios.delete(`/api/backlog/${id}/${ps}`);
+    resolve(request.data);
+  } catch (e) {
+    if (e.response) {
+      reject(e.response);
+    }
+    reject(e);
+  }
+});

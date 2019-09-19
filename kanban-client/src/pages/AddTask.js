@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Layout from '../hoc/Layout';
-import { resolveProject, saveTask } from '../store/actions';
+import { resolveProject, saveTask, getParticularTask } from '../store/actions';
 import { prepareFormData, resetForm, update } from '../utility/AppUtil';
 import FormField from '../components/FormField';
 import SubmitButton from '../components/SubmitButton';
+import ErrorMessage from '../components/ErrorMessage';
 
-// eslint-disable-next-line react/prefer-stateless-function
 class AddTask extends Component {
     state = {
       identifier: '',
@@ -85,7 +85,7 @@ class AddTask extends Component {
         },
         status: {
           element: 'select',
-          value: '',
+          value: 'TO_DO',
           config: {
             name: 'status',
             type: 'date',
@@ -104,19 +104,46 @@ class AddTask extends Component {
           validationMessage: '',
         },
       },
+      id: '',
+      fetchError: false,
     };
 
     componentDidMount() {
       (async () => {
         try {
-          const { identifier } = this.props.match.params;
+          const { identifier, sequence } = this.props.match.params;
           this.setState({ identifier });
           await this.props.resolveProject(identifier);
+          if (sequence) {
+            this.setState({ updateForm: true });
+            this._setFormData();
+          }
         } catch (e) {
           this.props.history.push('/dashboard');
         }
       })();
     }
+
+    _setFormData = async () => {
+      const { identifier, sequence } = this.props.match.params;
+      const { formData } = this.state;
+      try {
+        const task = await this.props.getParticularTask(identifier, sequence);
+        const updatedFormData = { ...formData };
+        // eslint-disable-next-line array-callback-return
+        Object.keys(updatedFormData).map((el) => {
+          const updatedEl = { ...updatedFormData[el] };
+          updatedEl.value = task[el] ? task[el] : '';
+          updatedEl.valid = true;
+          updatedEl.touch = true;
+          updatedEl.validationMessage = '';
+          updatedFormData[el] = updatedEl;
+        });
+        this.setState({ formData: updatedFormData, id: task.id });
+      } catch (e) {
+        this.setState({ fetchError: true });
+      }
+    };
 
   updateForm = (element) => {
     const {
@@ -134,15 +161,19 @@ class AddTask extends Component {
 
   _submitForm = async (event) => {
     event.preventDefault();
-    const { formData, updateForm, identifier } = this.state;
+    const {
+      formData, updateForm, identifier, id,
+    } = this.state;
     const { data: _data, formIsValid } = prepareFormData(formData);
-    // if (updateForm) _data.id = id;
+    if (updateForm) _data.id = id;
     if (formIsValid) {
       try {
         await this.props.saveTask(_data, identifier);
-        // if (updateForm) history.push('/');
-        this.setState({ formData: resetForm(formData) });
-        this._showSuccessMessage();
+        if (updateForm) this.props.history.push(`/projectBoard/${identifier}`);
+        else {
+          this.setState({ formData: resetForm(formData) });
+          this._showSuccessMessage();
+        }
       } catch (e) {
         this.setState({ formErrorMessage: 'Something went wrong please try again' });
       }
@@ -160,7 +191,7 @@ class AddTask extends Component {
 
   render() {
     const {
-      identifier, updateForm, formData, formErrorMessage, formSuccessMessage,
+      identifier, updateForm, formData, formErrorMessage, formSuccessMessage, fetchError,
     } = this.state;
     const { loading, project } = this.props;
     return (
@@ -178,19 +209,23 @@ class AddTask extends Component {
                 <p className="lead text-center">
                   {`${project.name} + ${project.identifier}`}
                 </p>
-                <form onSubmit={(event) => this._submitForm(event)}>
-                  {Object.keys(formData).map((el) => (
-                    <FormField
-                      key={el}
-                      id={el}
-                      formData={formData[el]}
-                      change={(element) => this.updateForm(element)}
-                    />
-                  ))}
-                  <p className="text-success">{formSuccessMessage}</p>
-                  <p className="text-danger">{formErrorMessage}</p>
-                  <SubmitButton loading={loading} />
-                </form>
+                {fetchError
+                  ? <ErrorMessage />
+                  : (
+                    <form onSubmit={(event) => this._submitForm(event)}>
+                      {Object.keys(formData).map((el) => (
+                        <FormField
+                          key={el}
+                          id={el}
+                          formData={formData[el]}
+                          change={(element) => this.updateForm(element)}
+                        />
+                      ))}
+                      <p className="text-success">{formSuccessMessage}</p>
+                      <p className="text-danger">{formErrorMessage}</p>
+                      <SubmitButton loading={loading} />
+                    </form>
+                  )}
               </div>
             </div>
           </div>
@@ -208,6 +243,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   resolveProject: (identifier) => dispatch(resolveProject(identifier)),
   saveTask: (data, identifier) => dispatch(saveTask(data, identifier)),
+  getParticularTask: (id, ps) => dispatch(getParticularTask(id, ps)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTask);

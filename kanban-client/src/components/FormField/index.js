@@ -47,9 +47,15 @@ const FormField = ({ formData, change, id }) => {
             className={formData.config.className}
             name={formData.config.name}
             onChange={(event) => change({ event, id })}
+            value={formData.value}
           >
             {Object.keys(formData.config.options).map((key) => (
-              <option key={key} value={key}>{formData.config.options[key]}</option>
+              <option
+                key={key}
+                value={key}
+              >
+                {formData.config.options[key]}
+              </option>
             ))}
           </select>
           {showError()}

@@ -11,4 +11,7 @@ export {
 
 export {
   saveTask,
+  getTaskByIdentifier,
+  getParticularTask,
+  deleteTask,
 } from './Task';

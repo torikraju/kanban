@@ -15,6 +15,7 @@ const Routes = () => (
     <Route path="/updateProject/:identifier" exact component={ProjectFrom} />
     <Route path="/projectBoard/:identifier" exact component={ProjectBoard} />
     <Route path="/addTask/:identifier" exact component={AddTask} />
+    <Route path="/updateTask/:identifier/:sequence" exact component={AddTask} />
   </Switch>
 );
 

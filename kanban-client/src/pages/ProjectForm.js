@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { keys } from '@material-ui/core/styles/createBreakpoints';
 import Layout from '../hoc/Layout';
 import { prepareFormData, resetForm, update } from '../utility/AppUtil';
 import FormField from '../components/FormField';
@@ -117,6 +116,7 @@ class ProjectFrom extends Component {
     })();
   }
 
+
   _setFormData = async (identifier) => {
     const { getOneProject: getOne } = this.props;
     const { formData } = this.state;
@@ -132,7 +132,7 @@ class ProjectFrom extends Component {
         updatedEl.validationMessage = '';
         if (el === 'identifier') {
           const updatedConfig = { ...updatedEl.config };
-          updatedConfig.disabled = 'true';
+          updatedConfig.disabled = true;
           updatedEl.config = updatedConfig;
         }
         updatedFormData[el] = updatedEl;
