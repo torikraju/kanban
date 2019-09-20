@@ -2,10 +2,12 @@ package edu.torikraju.kanban_api.services;
 
 import edu.torikraju.kanban_api.domain.Backlog;
 import edu.torikraju.kanban_api.domain.Project;
+import edu.torikraju.kanban_api.domain.User;
+import edu.torikraju.kanban_api.exceptions.NotFoundException;
 import edu.torikraju.kanban_api.exceptions.ProjectIdException;
 import edu.torikraju.kanban_api.repositories.BacklogRepository;
 import edu.torikraju.kanban_api.repositories.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.torikraju.kanban_api.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,16 +15,22 @@ public class ProjectService {
 
     private ProjectRepository projectRepository;
     private BacklogRepository backlogRepository;
+    private UserRepository userRepository;
 
-    @Autowired
-    public ProjectService(ProjectRepository projectRepository, BacklogRepository backlogRepository) {
+    public ProjectService(ProjectRepository projectRepository,
+                          BacklogRepository backlogRepository,
+                          UserRepository userRepository) {
         this.projectRepository = projectRepository;
         this.backlogRepository = backlogRepository;
+        this.userRepository = userRepository;
     }
 
-    public Project saveOrUpdate(Project project) {
+    public Project saveOrUpdate(Project project, String username) {
         String identifier = project.getIdentifier();
         try {
+            User user = userRepository.findByUsername(username);
+            project.setUser(user);
+            project.setProjectLeader(user.getUsername());
             if (project.getId() == null) {
                 Backlog backlog = new Backlog();
                 project.setBacklog(backlog);
@@ -39,24 +47,23 @@ public class ProjectService {
 
     }
 
-    public Project findByIdentifier(String identifier) {
+    public Project findByIdentifier(String identifier, String username) {
         Project project = projectRepository.findByIdentifier(identifier);
         if (project == null) {
             throw new ProjectIdException("Project identifier " + identifier + " does not exists");
+        }
+        if (!project.getProjectLeader().equals(username)) {
+            throw new NotFoundException("Project not found in your account");
         }
         return projectRepository.findByIdentifier(identifier);
     }
 
-    public Iterable<Project> findAll() {
-        return projectRepository.findAll();
+    public Iterable<Project> findAll(String username) {
+        return projectRepository.findAllByProjectLeader(username);
     }
 
-    public void deleteProject(String identifier) {
-        Project project = projectRepository.findByIdentifier(identifier);
-        if (project == null) {
-            throw new ProjectIdException("Project identifier " + identifier + " does not exists");
-        }
-        projectRepository.delete(project);
+    public void deleteProject(String identifier, String username) {
+        projectRepository.delete(findByIdentifier(identifier, username));
     }
 
 }
