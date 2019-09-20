@@ -27,10 +27,15 @@ public class ProjectService {
 
     public Project saveOrUpdate(Project project, String username) {
         String identifier = project.getIdentifier();
+        if (project.getId() != null) {
+            findByIdentifier(project.getIdentifier(), username);
+            if (projectRepository.getById(project.getId()) == null) {
+                throw new NotFoundException("Project with id: " + project.getId() + " not found");
+            }
+        }
+
         try {
             User user = userRepository.findByUsername(username);
-            project.setUser(user);
-            project.setProjectLeader(user.getUsername());
             if (project.getId() == null) {
                 Backlog backlog = new Backlog();
                 project.setBacklog(backlog);
@@ -40,6 +45,8 @@ public class ProjectService {
             if (project.getId() != null) {
                 project.setBacklog(backlogRepository.findByProjectIdentifier(identifier));
             }
+            project.setUser(user);
+            project.setProjectLeader(user.getUsername());
             return projectRepository.save(project);
         } catch (Exception e) {
             throw new ProjectIdException("Project identifier " + identifier + " already exists");
