@@ -1,21 +1,26 @@
 package edu.torikraju.kanban_api.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.Collection;
 import java.util.Date;
 
 @Entity
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Email(message = "Username needs to be an email")
     @NotBlank(message = "username is required")
-    @Column(unique = true)
+    @Column(unique = true, length = 32)
     private String username;
 
     @NotBlank(message = "Please enter your full name")
@@ -59,6 +64,30 @@ public class User {
         return username;
     }
 
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return false;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -71,6 +100,14 @@ public class User {
         this.name = name;
     }
 
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @JsonIgnore
+    @JsonProperty(value = "password")
     public String getPassword() {
         return password;
     }
@@ -78,7 +115,8 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
+    @JsonIgnore
+    @JsonProperty(value = "confirmPassword")
     public String getConfirmPassword() {
         return confirmPassword;
     }
