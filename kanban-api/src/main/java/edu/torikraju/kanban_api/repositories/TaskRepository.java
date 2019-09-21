@@ -11,4 +11,6 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
     List<Task> findByProjectIdentifierOrderByPriority(String identifier);
 
     Task findByProjectSequence(String sequence);
+
+    Task getById(Long id);
 }

@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @RestController
 @CrossOrigin
@@ -24,37 +25,40 @@ public class BacklogController {
     }
 
     @PostMapping("/{backlogId}")
-    public ResponseEntity<?> addTaskToBacklog(@Valid @RequestBody Task task, BindingResult result, @PathVariable String backlogId) {
+    public ResponseEntity<?> addTaskToBacklog(@Valid @RequestBody Task task,
+                                              BindingResult result,
+                                              @PathVariable String backlogId,
+                                              Principal principal) {
         ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
         if (errorMap != null) return errorMap;
-        Task newTask = taskService.addTask(backlogId, task);
+        Task newTask = taskService.addTask(backlogId, task, principal.getName());
         return new ResponseEntity<>(newTask, HttpStatus.CREATED);
     }
 
     @GetMapping("/{backlogId}")
-    public Iterable<Task> getProjectBacklog(@PathVariable String backlogId) {
-        return taskService.findBacklogByIdentifier(backlogId);
+    public Iterable<Task> getProjectBacklog(@PathVariable String backlogId, Principal principal) {
+        return taskService.findBacklogByIdentifier(backlogId, principal.getName());
     }
 
     @GetMapping("/{backlogId}/{sequence}")
-    public ResponseEntity<?> getProjectTask(@PathVariable String backlogId, @PathVariable String sequence) {
-        Task task = taskService.findBySequence(backlogId, sequence);
+    public ResponseEntity<?> getProjectTask(@PathVariable String backlogId, @PathVariable String sequence, Principal principal) {
+        Task task = taskService.findBySequence(backlogId, sequence, principal.getName());
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
     @PutMapping("/{backlogId}/{sequence}")
     public ResponseEntity<?> updateProjectTask(@Valid @RequestBody Task updatedTask, BindingResult result,
                                                @PathVariable String backlogId,
-                                               @PathVariable String sequence) {
+                                               @PathVariable String sequence, Principal principal) {
         ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
         if (errorMap != null) return errorMap;
-        Task updatedNewTask = taskService.updateTask(updatedTask, backlogId, sequence);
+        Task updatedNewTask = taskService.updateTask(updatedTask, backlogId, sequence, principal.getName());
         return new ResponseEntity<>(updatedNewTask, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{backlogId}/{sequence}")
-    public ResponseEntity<?> deleteProjectTask(@PathVariable String backlogId, @PathVariable String sequence) {
-        taskService.deleteTask(backlogId, sequence);
+    public ResponseEntity<?> deleteProjectTask(@PathVariable String backlogId, @PathVariable String sequence, Principal principal) {
+        taskService.deleteTask(backlogId, sequence, principal.getName());
         return new ResponseEntity<>("Task with sequence: " + sequence + " successfully deleted", HttpStatus.OK);
     }
 
