@@ -1,10 +1,25 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { setActiveLink } from '../../store/actions';
 
-// eslint-disable-next-line react/prefer-stateless-function
 class Layout extends Component {
+  state = {
+    links: [
+      {
+        name: 'Register',
+        linkTo: '/register',
+      },
+      {
+        name: 'Login',
+        linkTo: '/login',
+      },
+    ],
+  };
+
   render() {
-    const { children } = this.props;
+    const { children, setActiveLink: setLink, activeLink } = this.props;
+    const { links } = this.state;
     return (
       <>
         <nav className="navbar navbar-expand-sm navbar-dark bg-primary mb-4">
@@ -15,24 +30,30 @@ class Layout extends Component {
 
             <div className="collapse navbar-collapse" id="mobile-nav">
               <ul className="navbar-nav mr-auto">
-                <li className="nav-item">
-                  <Link className="nav-link" to="/">
+                <li className={`nav-item ${activeLink === 'dashboard' ? 'active' : null}`}>
+                  <Link
+                    className="nav-link"
+                    to="/dashboard"
+                    onClick={() => setLink('dashboard')}
+                  >
                     Dashboard
                   </Link>
                 </li>
               </ul>
 
               <ul className="navbar-nav ml-auto">
-                <li className="nav-item">
-                  <a className="nav-link " href="register.html">
-                    Sign Up
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="login.html">
-                    Login
-                  </a>
-                </li>
+                {links.map((el, index) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <li className={`nav-item ${activeLink === el.name ? 'active' : null}`} key={index}>
+                    <Link
+                      className="nav-link "
+                      to={el.linkTo}
+                      onClick={() => setLink(el.name)}
+                    >
+                      {el.name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -43,4 +64,12 @@ class Layout extends Component {
   }
 }
 
-export default Layout;
+const mapStateToProps = (state) => ({
+  activeLink: state.ui.activeLink,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setActiveLink: (name) => dispatch(setActiveLink(name)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout);

@@ -35,13 +35,13 @@ export const validate = (element, formData = []) => {
 
   if (element.validation.minLength) {
     const valid = !(element.value.trim().length < element.validation.minLength);
-    const message = `${!valid ? 'Provide at least 4 character' : ''}`;
+    const message = `${!valid ? `Provide at least ${element.validation.minLength} character` : ''}`;
     error = !valid ? [valid, message] : error;
   }
 
   if (element.validation.maxLength) {
     const valid = !(element.value.trim().length > element.validation.maxLength);
-    const message = `${!valid ? 'Maximum Allowed character is 5' : ''}`;
+    const message = `${!valid ? `Maximum Allowed character is ${element.validation.maxLength}` : ''}`;
     error = !valid ? [valid, message] : error;
   }
 

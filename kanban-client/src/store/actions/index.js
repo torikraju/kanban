@@ -15,3 +15,14 @@ export {
   getParticularTask,
   deleteTask,
 } from './Task';
+
+
+export {
+  setActiveLink,
+  removeActiveLink,
+} from './ui';
+
+
+export {
+  register,
+} from './auth';
