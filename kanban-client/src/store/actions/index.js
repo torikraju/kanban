@@ -25,4 +25,5 @@ export {
 
 export {
   register,
+  tryAuth,
 } from './auth';
